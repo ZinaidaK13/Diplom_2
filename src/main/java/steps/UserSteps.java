@@ -12,13 +12,15 @@ import data.UserData;
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 public class UserSteps {
 
     @Step("Отправить POST-запрос на создание пользователя")
-    public static Response CreateUser(UserRequest request) {
+    public static Response createUser(UserRequest request) {
         return given()
+                .baseUri(UserData.BASE_API_URL)
                 .header("Content-Type", "application/json")
                 .body(request)
                 .when()
@@ -34,17 +36,27 @@ public class UserSteps {
                 .body("user.name", equalTo(expectedUser.getName()));
     }
 
-    @Step("Проверить ошибку 403, Forbidden")
+    @Step("Проверить ошибку 403, Forbidden, создание дубликата")
     public static void verifyDuplicateUserError(Response response) {
         response.then()
                 .log().all()
                 .statusCode(SC_FORBIDDEN)
-                .body("success", equalTo(false));
+                .body("success", equalTo(false))
+                .body("message", containsString("User already exists"));
     }
 
+    @Step("Проверить ошибку 403, Forbidden, нет одного из полей")
+    public static void verifyMissingRequiredFieldsError(Response response) {
+        response.then()
+                .log().all()
+                .statusCode(SC_FORBIDDEN)
+                .body("success", equalTo(false))
+                .body("message", containsString("Email, password and name are required fields"));
+    }
     @Step("Удалить пользователя")
     public static Response deleteUser(String accessToken) {
         return given()
+                .baseUri(UserData.BASE_API_URL)
                 .log().all()
                 .header("Content-Type", "application/json")
                 .header("Authorization", accessToken) // Bearer токен (уже с префиксом)
@@ -64,6 +76,7 @@ public class UserSteps {
     @Step("Отправить POST-запрос на авторизацию пользователя")
     public static Response loginUser(LoginUserRequest request) {
         return given()
+                .baseUri(UserData.BASE_API_URL)
                 .log().ifValidationFails()
                 .header("Content-Type", "application/json")
                 .body(request)
@@ -87,7 +100,7 @@ public class UserSteps {
         response.then()
                 .log().ifValidationFails()
                 .statusCode(SC_UNAUTHORIZED)
-                .body("success", equalTo(false));
+                .body("success", equalTo(false)) ;
 
     }
 }

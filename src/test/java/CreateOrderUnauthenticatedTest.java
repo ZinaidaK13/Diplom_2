@@ -13,7 +13,7 @@ public class CreateOrderUnauthenticatedTest extends BaseAPITest {
     @Description("POST /api/orders — создание заказа без авторизации")
     public void createOrderUnauthenticated() {
         OrderRequest order = OrderData.createValidOrder();
-        Response response = OrderSteps.CreateOrder(null, order);
+        Response response = OrderSteps.createOrder(null, order);
         OrderSteps.verifyCreateOrderSuccess(response);
 
     }

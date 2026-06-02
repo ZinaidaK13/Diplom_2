@@ -13,7 +13,7 @@ public class UserRegistrationTest extends BaseAPITest {
     @Description("POST /api/auth/register— создание нового пользователя с валидными данными")
      public void registerValidUser(){
      UserRequest request = UserData.generateValidUser();
-        Response response= UserSteps.CreateUser(request);
+        Response response= UserSteps.createUser(request);
         UserSteps.verifyCreateUserSuccess(response, request);
     }
     @Test
@@ -21,10 +21,10 @@ public class UserRegistrationTest extends BaseAPITest {
     @Description("POST /api/auth/register — регистрация с существующим email должна вернуть ошибку")
     public void registerDuplicateUser() {
         UserRequest request = UserData.generateValidUser();
-        Response successResponse = UserSteps.CreateUser(request);
+        Response successResponse = UserSteps.createUser(request);
         UserSteps.verifyCreateUserSuccess(successResponse, request);
 
-        Response duplicateResponse = UserSteps.CreateUser(request);
+        Response duplicateResponse = UserSteps.createUser(request);
         UserSteps.verifyDuplicateUserError(duplicateResponse);
     }
 
@@ -37,8 +37,8 @@ public class UserRegistrationTest extends BaseAPITest {
                 UserData.USER_PASSWORD,
                 null);
 
-        Response response = UserSteps.CreateUser(request);
-        UserSteps.verifyDuplicateUserError(response);
+        Response response = UserSteps.createUser(request);
+        UserSteps.verifyMissingRequiredFieldsError(response);
     }
     @Test
     @DisplayName("Регистрация без обязательного поля (email)")
@@ -49,8 +49,8 @@ public class UserRegistrationTest extends BaseAPITest {
                 UserData.USER_PASSWORD,
                 UserData.generateName());
 
-        Response response = UserSteps.CreateUser(request);
-        UserSteps.verifyDuplicateUserError(response);
+        Response response = UserSteps.createUser(request);
+        UserSteps.verifyMissingRequiredFieldsError(response);
     }
     @Test
     @DisplayName("Регистрация без обязательного поля (password)")
@@ -61,8 +61,8 @@ public class UserRegistrationTest extends BaseAPITest {
                 null,
                 UserData.generateName());
 
-        Response response = UserSteps.CreateUser(request);
-        UserSteps.verifyDuplicateUserError(response);
+        Response response = UserSteps.createUser(request);
+        UserSteps.verifyMissingRequiredFieldsError(response);
     }
 
     private String accessToken;

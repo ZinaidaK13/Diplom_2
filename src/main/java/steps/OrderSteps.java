@@ -15,7 +15,7 @@ import data.OrderData;
 public class OrderSteps {
 
     @Step("Отправить POST-запрос на создание заказа без авторизации")
-    public static Response CreateOrder(String accessToken, OrderRequest request) {
+    public static Response createOrder(String accessToken, OrderRequest request) {
         return given()
                 .log().ifValidationFails()
                 .header("Content-Type", "application/json")
@@ -58,7 +58,8 @@ public class OrderSteps {
         response.then()
                 .log().ifValidationFails()
                 .statusCode(SC_BAD_REQUEST)
-                .body("success", equalTo(false));
+                .body("success", equalTo(false))
+                .body("message", containsString("Ingredient ids must be provided"));
     }
     @Step("Проверить ошибку создания заказа 500")
     public static void verifyCreateOrderError500(Response response) {

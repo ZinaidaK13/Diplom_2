@@ -15,11 +15,9 @@ public class AuthorizedOrderCreationTest  extends BaseAPITest{
     @Before
     public void setUpAuth() {
         UserRequest user = data.UserData.generateValidUser();
-        UserSteps.CreateUser(user);
+        UserSteps.createUser(user);
 
-        request.LoginUserRequest loginReq = new request.LoginUserRequest(
-                                                       user.getEmail(),
-                                                       data.UserData.USER_PASSWORD);
+        request.LoginUserRequest loginReq = new request.LoginUserRequest(user.getEmail(),data.UserData.USER_PASSWORD);
         Response loginRes = UserSteps.loginUser(loginReq);
         accessToken = loginRes.jsonPath().getString("accessToken");
     }
@@ -38,7 +36,7 @@ public class AuthorizedOrderCreationTest  extends BaseAPITest{
     @Description("POST /api/orders — пустой список ингредиентов должен вернуть 400")
     public void createOrderWithoutIngredientsShouldReturn400() {
         OrderRequest order = OrderData.createEmptyOrder();
-        Response response = OrderSteps.CreateOrder(accessToken, order);
+        Response response = OrderSteps.createOrder(accessToken, order);
         OrderSteps.verifyCreateOrderError400(response);
     }
 
@@ -47,7 +45,7 @@ public class AuthorizedOrderCreationTest  extends BaseAPITest{
     @Description("POST /api/orders — невалидный ID ингредиента должен вернуть 500")
     public void createOrderWithInvalidIngredientHashShouldReturn500() {
         OrderRequest order = OrderData.createInvalidOrder();
-        Response response = OrderSteps.CreateOrder(accessToken, order);
+        Response response = OrderSteps.createOrder(accessToken, order);
         OrderSteps.verifyCreateOrderError500(response);
     }
 
